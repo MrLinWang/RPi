@@ -29,9 +29,9 @@ import PIL.Image as Image
 import PIL.ImageDraw as ImageDraw
 import PIL.ImageFont as ImageFont
 import time
-import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('pdf')
+import matplotlib.pyplot as plt
 import urllib.request
 import numpy as np
 import json
@@ -194,11 +194,14 @@ def refresh():
     draw_black.text((50, 330), WF["threeday"], font = font, fill = 0)
     draw_black.text((50, 350), WF["fourday"], font = font, fill = 0)
 
-    #天气折线图 hightem.png lowtem.png
-    drawline(WF)
-    highim=Image.open('hightem.png')
-    highimg=highim.resize((200,115))
-    image_black.paste(highimg,(440,0))
+    #天气折线图 hightem.png lowtem.png ##失败！无法清晰显示
+    #drawline(WF)
+    #highim=Image.open('hightem.png')
+    #highimg=highim.resize((EPD_WIDTH,EPD_HEIGHT))
+    #image_black.paste(highimg,(0,0))
+    #lowim=Image.open('lowtem.png')
+    #lowimg=lowim.resize((EPD_WIDTH,EPD_HEIGHT))
+    #image_yellow.paste(lowimg,(0,0))
 
     #显示
     epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
@@ -237,8 +240,8 @@ def drawline(WF):
     date = WF["date"]
 
     #matplotlib中文显示问题
-    matplotlib.rcParams['font.family']='SimHei'
-    matplotlib.rcParams['font.sans-serif']=['SimHei']
+    #matplotlib.rcParams['font.family']='SimHei'
+    matplotlib.rcParams['font.sans-serif']=['Droid Sans Fallback']
 
     #找出温度最大最小边界
     high = hightemp[0]
@@ -258,9 +261,13 @@ def drawline(WF):
     ax1=fig1.add_subplot(111)
     x = date
     y = hightemp
-    plt.xticks(x)
+    ax1.set_xticks(x)
+    ax1.set_yticks(temphl)
+    ax1.set_ylim(low,high)
+    ax1.set_xlabel("日期")
+    ax1.set_ylabel("温度")
     ax1.plot(x,y,'k',color='k',linewidth=1,linestyle="-")
-    plt.xticks(x)
+    #ax1.axis('off')
     fig1.savefig("hightem.png")
     
     #绘制低温图
@@ -268,12 +275,15 @@ def drawline(WF):
     ax2=fig2.add_subplot(111)
     x = date
     y = lowtemp
-    ax2.axis('off')
+    ax2.set_xticks(x)
+    ax2.set_yticks(temphl)
+    ax2.set_ylim(low,high)
+    ax2.set_xlabel("日期")
+    ax2.set_ylabel("温度")
     ax2.plot(x,y,'k',color='k',linewidth=1,linestyle="-")
-    plt.xticks(x)
-    ax2.axis('off')#隐藏坐标系
+    ax2.axis('off')
     fig2.savefig("lowtem.png")
-    
+
 def main():
     #welcome()
     #while(True):
