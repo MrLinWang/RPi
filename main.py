@@ -234,7 +234,7 @@ def welcome():
     print("进入界面。时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))))
 
 def drawline(WF):
-    #绘制天气折线图
+    #绘制天气高低温折线图
     hightemp = WF["hightem"]
     lowtemp = WF["lowtem"]
     date = WF["date"]
@@ -285,11 +285,11 @@ def drawline(WF):
     fig2.savefig("lowtem.png")
 
 def main():
-    #welcome()
-    #while(True):
+    welcome()
+    while(True):
         refresh()
-    #    print("\r最近刷新时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))),end="")
-    #    time.sleep(300)
+        print("\r最近刷新时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))),end="")
+        time.sleep(300)
 
 if __name__ == '__main__':
     main()
