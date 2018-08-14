@@ -29,8 +29,11 @@ import PIL.Image as Image
 import PIL.ImageDraw as ImageDraw
 import PIL.ImageFont as ImageFont
 import time
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 import urllib.request
+import numpy as np
 import json
 import gzip
 
@@ -93,8 +96,17 @@ def weather():
                 + '风力:' + forecast[4].get('fengli')[9:12] + '   '
 
 
-        #high_tem = 
-        WF = {"city":cityname,"today1":today1,"today2":today2,"oneday":one_day,"twoday":two_day,"threeday":three_day,"fourday":four_day}
+        hightem = [1,2,3,4,5]
+        lowtem = [1,2,3,4,5]
+        date = [1,2,3,4,5]
+        for i in range(0,5):
+            hightem[i] = int(forecast[i].get('high')[3:5])
+            lowtem[i] = int(forecast[i].get('low')[3:5])
+            date[i] = int(forecast[i].get('date')[:-4])
+
+        WF = {"city":cityname,"today1":today1,"today2":today2,"oneday":one_day,\
+                "twoday":two_day,"threeday":three_day,"fourday":four_day,\
+                "hightem":hightem,"lowtem":lowtem,"date":date}
     return WF
 
 def refresh():
@@ -176,12 +188,17 @@ def refresh():
     str_tdweather2 = WF["today2"]
     draw_black.text((315, 33), str_tdweather2, font = font, fill = 0)
     #1234_day
-
     font = ImageFont.truetype('fonts/msyhl.ttc', 15)
     draw_black.text((50, 290), WF["oneday"], font = font, fill = 0)
     draw_black.text((50, 310), WF["twoday"], font = font, fill = 0)
     draw_black.text((50, 330), WF["threeday"], font = font, fill = 0)
     draw_black.text((50, 350), WF["fourday"], font = font, fill = 0)
+
+    #天气折线图 hightem.png lowtem.png
+    drawline(WF)
+    highim=Image.open('hightem.png')
+    highimg=highim.resize((200,115))
+    image_black.paste(highimg,(440,0))
 
     #显示
     epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
@@ -213,16 +230,56 @@ def welcome():
 
     print("进入界面。时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))))
 
+def drawline(WF):
+    #绘制天气折线图
+    hightemp = WF["hightem"]
+    lowtemp = WF["lowtem"]
+    date = WF["date"]
 
+    #matplotlib中文显示问题
+    matplotlib.rcParams['font.family']='SimHei'
+    matplotlib.rcParams['font.sans-serif']=['SimHei']
 
+    #找出温度最大最小边界
+    high = hightemp[0]
+    for i in range(0,5):
+        if high < hightemp[i]:
+                high = hightemp[i]
+    low = lowtemp[0]
+    for i in range(0,5):
+        if low > lowtemp[i]:
+                low = lowtemp[i]
+    high = high + 1
+    low = low - 1
+    temphl =np.arange(low,high+1,1)
 
-
+    #绘制高温图
+    fig1=plt.figure()
+    ax1=fig1.add_subplot(111)
+    x = date
+    y = hightemp
+    plt.xticks(x)
+    ax1.plot(x,y,'k',color='k',linewidth=1,linestyle="-")
+    plt.xticks(x)
+    fig1.savefig("hightem.png")
+    
+    #绘制低温图
+    fig2=plt.figure()
+    ax2=fig2.add_subplot(111)
+    x = date
+    y = lowtemp
+    ax2.axis('off')
+    ax2.plot(x,y,'k',color='k',linewidth=1,linestyle="-")
+    plt.xticks(x)
+    ax2.axis('off')#隐藏坐标系
+    fig2.savefig("lowtem.png")
+    
 def main():
-    welcome()
-    while(True):
+    #welcome()
+    #while(True):
         refresh()
-        print("\r最近刷新时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))),end="")
-        time.sleep(300)
+    #    print("\r最近刷新时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))),end="")
+    #    time.sleep(300)
 
 if __name__ == '__main__':
     main()
