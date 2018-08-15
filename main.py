@@ -147,7 +147,7 @@ def rotateimage(image,angle,width,height):#图像无裁剪旋转函数#有bug
     image_tem = image_tem.crop(box)
     return image_tem
 
-def refresh():#刷新内容
+def refresh(reverse = False):#刷新内容
     epd = epd7in5b.EPD()
     epd.init()
 
@@ -256,10 +256,16 @@ def refresh():#刷新内容
     #lowimg=lowim.resize(png_size)
     #image_yellow.paste(lowimg,png_locate)
 
+    #图像翻转
+    if reverse == True:
+        image_black = image_black.transpose(Image.ROTATE_180)
+        image_yellow = image_yellow.transpose(Image.ROTATE_180)
+
+
     #显示
     epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
 
-def refresh1(angle = -90):#刷新内容
+def refresh1(reverse = False):#刷新内容
     epd = epd7in5b.EPD()
     epd.init()
 
@@ -332,14 +338,20 @@ def refresh1(angle = -90):#刷新内容
     font = ImageFont.truetype(Font_bd, 18)
     draw_black.text((13,220), strB2Q(str_cal), font = font, fill = 0)
 
-    image_black = rotateimage(image_black,angle,EPD_WIDTH,EPD_HEIGHT)
-    image_yellow = rotateimage(image_yellow,angle,EPD_WIDTH,EPD_HEIGHT)
+
+    image_black = rotateimage(image_black,-90,EPD_WIDTH,EPD_HEIGHT)
+    image_yellow = rotateimage(image_yellow,-90,EPD_WIDTH,EPD_HEIGHT)
+    #图像翻转
+    if reverse == True:
+        image_black = image_black.transpose(Image.ROTATE_180)
+        image_yellow = image_yellow.transpose(Image.ROTATE_180)
+
 
 
     #显示
     epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
 
-def welcome():#显示欢迎语
+def welcome(reverse = False):#显示欢迎语
     # display images
     #frame_black = epd.get_frame_buffer(Image.open('background.bmp'))
     #frame_yellow = epd.get_frame_buffer(Image.open('NULL.bmp'))
@@ -361,11 +373,16 @@ def welcome():#显示欢迎语
     draw_yellow.text((240,240),'LinWang 制作', font = font, fill = 0)
     draw_black.text((241,241),'LinWang 制作', font = font, fill = 0)
 
+    #图像翻转
+    if reverse == True:
+        image_black = image_black.transpose(Image.ROTATE_180)
+        image_yellow = image_yellow.transpose(Image.ROTATE_180)
+
     epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
 
     print("进入界面。时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))))
 
-def welcome1(angle = -90):#显示欢迎语
+def welcome1(reverse = False):#显示欢迎语
     # display images
     #frame_black = epd.get_frame_buffer(Image.open('background.bmp'))
     #frame_yellow = epd.get_frame_buffer(Image.open('NULL.bmp'))
@@ -387,8 +404,11 @@ def welcome1(angle = -90):#显示欢迎语
     draw_yellow.text((220,210),'LinWang 制作', font = font, fill = 0)
     draw_black.text((221,211),'LinWang 制作', font = font, fill = 0)
 
-    image_black = image_black.rotate(angle)
-    image_yellow = image_yellow.rotate(angle)
+    image_black = image_black.rotate(-90)
+    image_yellow = image_yellow.rotate(-90)
+    if reverse == True:
+        image_black = image_black.transpose(Image.ROTATE_180)
+        image_yellow = image_yellow.transpose(Image.ROTATE_180)
 
     epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
 
@@ -455,10 +475,26 @@ def main():
             print("\r最近刷新时间：{},刷新耗时：{}秒".format(time.strftime('%H:%M:%S', time.localtime(time_start)),int(time_end-time_start)),end="")
             time.sleep(300)
     elif sys.argv[1]=='2':
+        welcome(True)
+        while(True):
+            time_start=time.time()
+            refresh(True)
+            time_end=time.time()
+            print("\r最近刷新时间：{},刷新耗时：{}秒".format(time.strftime('%H:%M:%S', time.localtime(time_start)),int(time_end-time_start)),end="")
+            time.sleep(300)
+    elif sys.argv[1]=='3':
         welcome1()
         while(True):
             time_start=time.time()
             refresh1()
+            time_end=time.time()
+            print("\r最近刷新时间：{},刷新耗时：{}秒".format(time.strftime('%H:%M:%S', time.localtime(time_start)),int(time_end-time_start)),end="")
+            time.sleep(300)
+    elif sys.argv[1]=='4':
+        welcome1(True)
+        while(True):
+            time_start=time.time()
+            refresh1(True)
             time_end=time.time()
             print("\r最近刷新时间：{},刷新耗时：{}秒".format(time.strftime('%H:%M:%S', time.localtime(time_start)),int(time_end-time_start)),end="")
             time.sleep(300)
@@ -469,16 +505,30 @@ def main():
         print("刷新耗时：{}秒".format(int(time_end-time_start)))
     elif sys.argv[1]=='test2':
         time_start=time.time()
+        refresh(True)
+        time_end=time.time()
+        print("刷新耗时：{}秒".format(int(time_end-time_start)))
+    elif sys.argv[1]=='test3':
+        time_start=time.time()
         refresh1()
         time_end=time.time()
         print("刷新耗时：{}秒".format(int(time_end-time_start)))
+    elif sys.argv[1]=='test4':
+        time_start=time.time()
+        refresh1(True)
+        time_end=time.time()
+        print("刷新耗时：{}秒".format(int(time_end-time_start)))
     else:
-        print("parameter:\n"\
-             +"none\tpattern 1\n"\
-             +"1\tpattern 1\n"\
-             +"2\tpattern 2\n"\
-             +"test1\ttest pattern 1\n"\
-             +"test2\ttest pattern 2\n"\
+        print("参数的作用:\n"\
+             +"无参\t横置正向\n"\
+             +"1\t横置正向\n"\
+             +"2\t横置反向\n"\
+             +"3\t竖置正向\n"\
+             +"4\t竖置反向\n"\
+             +"test1\t测试模式 横置正向\n"\
+             +"test2\t测试模式 横置反向\n"\
+             +"test3\t测试模式 竖置正向\n"\
+             +"test4\t测试模式 竖置反向\n"\
              +"Operation terminates!")
 
 
