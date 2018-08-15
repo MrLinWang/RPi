@@ -33,13 +33,20 @@ import matplotlib
 matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import urllib.request
+import jieba
 import numpy as np
 import json
 import gzip
 import calendar
+import sys
 
 EPD_WIDTH = 640
 EPD_HEIGHT = 384
+
+#字体地址
+Font_bd = 'fonts/msyhbd.ttc'
+Font_l = 'fonts/msyhl.ttc'
+Font = 'fonts/msyh.ttc'
 
 def strB2Q(ustring):#半角转全角函数  #后面文字显示需对齐时使用
     rstring = ""
@@ -53,11 +60,16 @@ def strB2Q(ustring):#半角转全角函数  #后面文字显示需对齐时使�
         rstring += chr(inside_code)
     return rstring
 
+def getcityname():#获取本地位置
+    city_info=urllib.request.urlopen( urllib.request.Request('http://pv.sohu.com/cityjson')).read().decode('gb2312')
+    city_name = city_info.split('=')[1].split(':')[3].split('"')[1]
+    city_name = jieba.lcut(city_name)[1]
+    return city_name
 
-def weather():
-    #获取天气情况
+def weather():#获取天气情况
     #cityname = input('你想查询的城市?\n')
-    cityname = '石家庄'
+    #cityname = '石家庄'
+    cityname = getcityname()
 
     #访问的url，其中urllib.parse.quote是将城市名转换为url的组件
     url = 'http://wthrcdn.etouch.cn/weather_mini?city='+urllib.parse.quote(cityname)
@@ -123,8 +135,19 @@ def weather():
                 "hightem":hightem,"lowtem":lowtem,"date":date,"weather_dict":weather_dict}
     return WF
 
-def refresh():
-    #刷新内容
+def rotateimage(image,angle,width,height):#图像无裁剪旋转函数#有bug
+    if width > height:
+        size = width
+    else:
+        size = height
+    image_tem = Image.new('1', (size, size), 255)
+    image_tem.paste(image,(0,0))
+    image_tem = image_tem.rotate(angle)
+    box=(0,0,height,width)
+    image_tem = image_tem.crop(box)
+    return image_tem
+
+def refresh():#刷新内容
     epd = epd7in5b.EPD()
     epd.init()
 
@@ -148,7 +171,7 @@ def refresh():
 
     #日期
     str_year = time.strftime('%Y年%m月%d日', time.localtime(time.time()))
-    font = ImageFont.truetype('fonts/msyh.ttc', 23)
+    font = ImageFont.truetype(Font, 23)
     draw_black.text((15, 15), str_year, font = font, fill = 0)
     #str_date = time.strftime('%m月%d日', time.localtime(time.time()))
     #font = ImageFont.truetype('fonts/msyhbd.ttc', 40)
@@ -156,7 +179,7 @@ def refresh():
 
     #时间
     str_time = time.strftime('%H:%M', time.localtime(time.time()))
-    font = ImageFont.truetype('fonts/msyhbd.ttc', 150)
+    font = ImageFont.truetype(Font_bd, 150)
     draw_black.text((110, 95), str_time, font = font, fill = 0)
     draw_yellow.text((108, 93), str_time, font = font, fill = 0)
 
@@ -187,22 +210,22 @@ def refresh():
         str_week = '星期六'
     else:
         str_week = 'error!'
-    font = ImageFont.truetype('fonts/msyhbd.ttc', 55)
+    font = ImageFont.truetype(Font_bd, 55)
     draw_black.text((17, 35), str_week, font = font, fill = 0)
 
     #天气
     WF = weather()
     #today
-    str_city = WF["city"] + ' ' + "今日天气"
-    font = ImageFont.truetype('fonts/msyhbd.ttc', 20)
-    draw_black.text((245, 5), str_city, font = font, fill = 0)
+    str_city = WF["city"] +" "+ "今日天气"
+    font = ImageFont.truetype(Font_bd, 20)
+    draw_black.text((230, 5), str_city, font = font, fill = 0)
     str_tdweather1 = WF["today1"]
-    font = ImageFont.truetype('fonts/msyh.ttc', 20)
+    font = ImageFont.truetype(Font, 20)
     draw_black.text((215, 33), str_tdweather1, font = font, fill = 0)
     str_tdweather2 = WF["today2"]
     draw_black.text((315, 33), str_tdweather2, font = font, fill = 0)
     #1234_day
-    font = ImageFont.truetype('fonts/msyhl.ttc', 15)
+    font = ImageFont.truetype(Font_l, 15)
     draw_black.text((50, 290), WF["oneday"], font = font, fill = 0)
     draw_black.text((50, 310), WF["twoday"], font = font, fill = 0)
     draw_black.text((50, 330), WF["threeday"], font = font, fill = 0)
@@ -212,7 +235,7 @@ def refresh():
     yy = int(time.strftime('%Y', time.localtime(time.time())))
     mm = int(time.strftime('%m', time.localtime(time.time())))
     str_cal = calendar.month(yy,mm)
-    font = ImageFont.truetype('fonts/msyhbd.ttc', 15)
+    font = ImageFont.truetype(Font_bd, 15)
     image_cal = Image.new('1', (300, 145), 255)
     draw_cal = ImageDraw.Draw(image_cal)
     draw_cal.text((0,0), strB2Q(str_cal), font = font, fill = 0)
@@ -236,8 +259,87 @@ def refresh():
     #显示
     epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
 
-def welcome():
-    #显示欢迎语
+def refresh1(angle = -90):#刷新内容
+    epd = epd7in5b.EPD()
+    epd.init()
+
+    EPD_WIDTH = 384
+    EPD_HEIGHT = 640
+
+    # For simplicity, the arguments are explicit numerical coordinates
+    image_yellow = Image.new('1', (EPD_WIDTH, EPD_HEIGHT), 255)    # 255: clear the frame
+    draw_yellow = ImageDraw.Draw(image_yellow)
+    image_black = Image.new('1', (EPD_WIDTH, EPD_HEIGHT), 255)    # 255: clear the frame
+    draw_black = ImageDraw.Draw(image_black)
+    draw_yellow.line((0,90,384,90),fill=0,width=4)#上横线
+    draw_yellow.line((190,0,190,90),fill=0,width=3)#上竖线
+    draw_yellow.line((0,215,384,215),fill=0,width=4)#上2横线
+    draw_yellow.line((0,390,384,390),fill=0,width=4)#下横线
+    #draw_yellow.line((440,0,440,115),fill=0,width=3)#上右竖线
+    #draw_yellow.line((0,280,640,280),fill=0,width=5)#下横线
+    
+
+    #日期
+    str_year = time.strftime('%Y年%m月%d日', time.localtime(time.time()))
+    font = ImageFont.truetype(Font, 20)
+    draw_black.text((17, 5), str_year, font = font, fill = 0)
+
+
+    #时间
+    str_time = time.strftime('%H:%M', time.localtime(time.time()))
+    font = ImageFont.truetype(Font_bd, 130)
+    draw_black.text((15, 65), str_time, font = font, fill = 0)
+    draw_yellow.text((13, 63), str_time, font = font, fill = 0)
+
+    #星期
+    week = time.strftime('%w', time.localtime(time.time()))
+    if week == '0':
+        str_week = '星期日'
+    elif week == '1':
+        str_week = '星期一'
+    elif week == '2':
+        str_week = '星期二'
+    elif week == '3':
+        str_week = '星期三'
+    elif week == '4':
+        str_week = '星期四'
+    elif week == '5':
+        str_week = '星期五'
+    elif week == '6':
+        str_week = '星期六'
+    else:
+        str_week = 'error!'
+    font = ImageFont.truetype(Font_bd, 45)
+    draw_black.text((25, 25), str_week, font = font, fill = 0)
+
+    #天气
+    WF = weather()
+    #today
+    str_city = WF["city"] + ' ' + "今日天气"
+    font = ImageFont.truetype(Font_bd, 15)
+    draw_black.text((220, 5), str_city, font = font, fill = 0)
+    str_tdweather1 = WF["today1"]
+    font = ImageFont.truetype(Font, 15)
+    draw_black.text((210, 25), str_tdweather1, font = font, fill = 0)
+    str_tdweather2 = WF["today2"]
+    draw_black.text((290, 25), str_tdweather2, font = font, fill = 0)
+
+
+    #日历
+    yy = int(time.strftime('%Y', time.localtime(time.time())))
+    mm = int(time.strftime('%m', time.localtime(time.time())))
+    str_cal = calendar.month(yy,mm)
+    font = ImageFont.truetype(Font_bd, 18)
+    draw_black.text((13,220), strB2Q(str_cal), font = font, fill = 0)
+
+    image_black = rotateimage(image_black,angle,EPD_WIDTH,EPD_HEIGHT)
+    image_yellow = rotateimage(image_yellow,angle,EPD_WIDTH,EPD_HEIGHT)
+
+
+    #显示
+    epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
+
+def welcome():#显示欢迎语
     # display images
     #frame_black = epd.get_frame_buffer(Image.open('background.bmp'))
     #frame_yellow = epd.get_frame_buffer(Image.open('NULL.bmp'))
@@ -253,9 +355,9 @@ def welcome():
     image_yellow = Image.new('1', (EPD_WIDTH, EPD_HEIGHT), 255)    # 255: clear the frame
     draw_yellow = ImageDraw.Draw(image_yellow)
 
-    font = ImageFont.truetype('fonts/msyh.ttc', 100)
+    font = ImageFont.truetype(Font, 100)
     draw_black.text((115, 100), '欢迎使用！', font = font, fill = 0)
-    font = ImageFont.truetype('fonts/msyhbd.ttc', 30)
+    font = ImageFont.truetype(Font_bd, 30)
     draw_yellow.text((240,240),'LinWang 制作', font = font, fill = 0)
     draw_black.text((241,241),'LinWang 制作', font = font, fill = 0)
 
@@ -263,8 +365,36 @@ def welcome():
 
     print("进入界面。时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))))
 
-def drawline(WF):
-    #绘制天气高低温折线图
+def welcome1(angle = -90):#显示欢迎语
+    # display images
+    #frame_black = epd.get_frame_buffer(Image.open('background.bmp'))
+    #frame_yellow = epd.get_frame_buffer(Image.open('NULL.bmp'))
+    #epd.display_frame(frame_black,frame_yellow)
+
+    print("欢迎使用！时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))))
+
+    epd = epd7in5b.EPD()
+    epd.init()
+    
+    image_black = Image.new('1', (EPD_WIDTH, EPD_HEIGHT), 255)    # 255: clear the frame
+    draw_black = ImageDraw.Draw(image_black)
+    image_yellow = Image.new('1', (EPD_WIDTH, EPD_HEIGHT), 255)    # 255: clear the frame
+    draw_yellow = ImageDraw.Draw(image_yellow)
+
+    font = ImageFont.truetype(Font, 80)
+    draw_black.text((150, 100), '欢迎使用！', font = font, fill = 0)
+    font = ImageFont.truetype(Font_bd, 30)
+    draw_yellow.text((220,210),'LinWang 制作', font = font, fill = 0)
+    draw_black.text((221,211),'LinWang 制作', font = font, fill = 0)
+
+    image_black = image_black.rotate(angle)
+    image_yellow = image_yellow.rotate(angle)
+
+    epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
+
+    print("进入界面。时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))))
+
+"""def drawline(WF):#绘制天气高低温折线图
     hightemp = WF["hightem"]
     lowtemp = WF["lowtem"]
     date = WF["date"]
@@ -313,13 +443,45 @@ def drawline(WF):
     ax2.plot(x,y,'k',color='k',linewidth=1,linestyle="-")
     ax2.axis('off')
     fig2.savefig("lowtem.png")
+    """
 
 def main():
-    welcome()
-    while(True):
+    if len(sys.argv)==1 or sys.argv[1]=='1':
+        welcome()
+        while(True):
+            time_start=time.time()
+            refresh()
+            time_end=time.time()
+            print("\r最近刷新时间：{},刷新耗时：{}秒".format(time.strftime('%H:%M:%S', time.localtime(time_start)),int(time_end-time_start)),end="")
+            time.sleep(300)
+    elif sys.argv[1]=='2':
+        welcome1()
+        while(True):
+            time_start=time.time()
+            refresh1()
+            time_end=time.time()
+            print("\r最近刷新时间：{},刷新耗时：{}秒".format(time.strftime('%H:%M:%S', time.localtime(time_start)),int(time_end-time_start)),end="")
+            time.sleep(300)
+    elif sys.argv[1]=='test1':
+        time_start=time.time()
         refresh()
-        print("\r最近刷新时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))),end="")
-        time.sleep(300)
+        time_end=time.time()
+        print("刷新耗时：{}秒".format(int(time_end-time_start)))
+    elif sys.argv[1]=='test2':
+        time_start=time.time()
+        refresh1()
+        time_end=time.time()
+        print("刷新耗时：{}秒".format(int(time_end-time_start)))
+    else:
+        print("parameter:\n"\
+             +"none\tpattern 1\n"\
+             +"1\tpattern 1\n"\
+             +"2\tpattern 2\n"\
+             +"test1\ttest pattern 1\n"\
+             +"test2\ttest pattern 2\n"\
+             +"Operation terminates!")
+
+
 
 if __name__ == '__main__':
     main()
