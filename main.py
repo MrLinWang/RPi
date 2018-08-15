@@ -106,7 +106,7 @@ def weather():
 
         WF = {"city":cityname,"today1":today1,"today2":today2,"oneday":one_day,\
                 "twoday":two_day,"threeday":three_day,"fourday":four_day,\
-                "hightem":hightem,"lowtem":lowtem,"date":date}
+                "hightem":hightem,"lowtem":lowtem,"date":date,"weather_dict":weather_dict}
     return WF
 
 def refresh():
@@ -196,12 +196,14 @@ def refresh():
 
     #天气折线图 hightem.png lowtem.png ##失败！无法清晰显示
     #drawline(WF)
+    #png_size = (400,384)
+    #png_locate  = (0,250)
     #highim=Image.open('hightem.png')
-    #highimg=highim.resize((EPD_WIDTH,EPD_HEIGHT))
-    #image_black.paste(highimg,(0,0))
+    #highimg=highim.resize(png_size)
+    #image_black.paste(highimg,png_locate)
     #lowim=Image.open('lowtem.png')
-    #lowimg=lowim.resize((EPD_WIDTH,EPD_HEIGHT))
-    #image_yellow.paste(lowimg,(0,0))
+    #lowimg=lowim.resize(png_size)
+    #image_yellow.paste(lowimg,png_locate)
 
     #显示
     epd.display_frame(epd.get_frame_buffer(image_black),epd.get_frame_buffer(image_yellow))
