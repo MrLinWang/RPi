@@ -38,23 +38,24 @@ SPI library of Python
 PIL (Python Imaging Library) library
 
 在树莓派上拉取代码：  
-<pre><code>git clone https://github.com/MrLinWang/RPi-Epaper.git
-</code></pre>
+<pre><code>git clone https://github.com/MrLinWang/RPi-Epaper.git</code></pre>
 
 执行：
-<pre><code>sudo python3 main.py  
-</code></pre>
+<pre><code>sudo python3 main.py  </code></pre>
 
 在输入运行命令时可添加参数，如输入：
-<pre><code>sudo python3 mian.py 1
-</code></pre>
+<pre><code>sudo python3 mian.py 1</code></pre>
 为横向放置模式  
 输入：
-<pre><code>sudo python3 mian.py 2
-</code></pre>
+<pre><code>sudo python3 mian.py 2</code></pre>
 为竖直放置模式
+更多模式可使用：
+<pre><code>sudo python3 mian.py help</code></pre>
+命令进行查询
 
-由于本人只是略懂python语言，硬件方面是小白，故本代码主要是以微雪提供的官方示例代码为基础，进行了显示内容的抓取和调整  
+声明：
+-----
+由于本人只是略懂python语言，硬件驱动方面是小白，故本代码主要是以微雪提供的官方示例代码为基础，进行了显示内容的抓取和布置  
 <p>
 /******************************************************************************
  * File Name          : readme.txt
