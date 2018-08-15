@@ -281,6 +281,7 @@ def refresh1(reverse = False):#刷新内容
     draw_yellow.line((190,0,190,90),fill=0,width=3)#上竖线
     draw_yellow.line((0,215,384,215),fill=0,width=4)#上2横线
     draw_yellow.line((0,390,384,390),fill=0,width=4)#下横线
+    draw_yellow.line((0,460,384,460),fill=0,width=4)#下横线
     #draw_yellow.line((440,0,440,115),fill=0,width=3)#上右竖线
     #draw_yellow.line((0,280,640,280),fill=0,width=5)#下横线
     
@@ -329,6 +330,12 @@ def refresh1(reverse = False):#刷新内容
     draw_black.text((210, 25), str_tdweather1, font = font, fill = 0)
     str_tdweather2 = WF["today2"]
     draw_black.text((290, 25), str_tdweather2, font = font, fill = 0)
+    #1234——day
+    font = ImageFont.truetype(Font, 11)
+    draw_black.text((8, 395), WF["oneday"], font = font, fill = 0)
+    draw_black.text((8, 410), WF["twoday"], font = font, fill = 0)
+    draw_black.text((8, 425), WF["threeday"], font = font, fill = 0)
+    draw_black.text((8, 440), WF["fourday"], font = font, fill = 0)
 
 
     #日历
