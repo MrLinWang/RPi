@@ -63,7 +63,7 @@ def strB2Q(ustring):#半角转全角函数  #后面文字显示需对齐时使�
 def getcityname():#获取本地位置
     city_info=urllib.request.urlopen( urllib.request.Request('http://pv.sohu.com/cityjson')).read().decode('gb2312')
     city_name = city_info.split('=')[1].split(':')[3].split('"')[1]
-    city_name = jieba.lcut(city_name)[1]
+    city_name = jieba.lcut(city_name)[-1]
     return city_name
 
 def weather():#获取天气情况
@@ -332,10 +332,10 @@ def refresh1(reverse = False):#刷新内容
     draw_black.text((290, 25), str_tdweather2, font = font, fill = 0)
     #1234——day
     font = ImageFont.truetype(Font, 11)
-    draw_black.text((8, 395), WF["oneday"], font = font, fill = 0)
-    draw_black.text((8, 410), WF["twoday"], font = font, fill = 0)
-    draw_black.text((8, 425), WF["threeday"], font = font, fill = 0)
-    draw_black.text((8, 440), WF["fourday"], font = font, fill = 0)
+    draw_black.text((5, 395), WF["oneday"], font = font, fill = 0)
+    draw_black.text((5, 410), WF["twoday"], font = font, fill = 0)
+    draw_black.text((5, 425), WF["threeday"], font = font, fill = 0)
+    draw_black.text((5, 440), WF["fourday"], font = font, fill = 0)
 
 
     #日历
