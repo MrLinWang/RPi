@@ -42,6 +42,7 @@ PIL (Python Imaging Library) library
 
 执行：
 <pre><code>sudo python3 main.py  </code></pre>
+命令即可在墨水屏上显示日历、天气等信息。由于此墨水屏刷新速度较慢，故本程序设置为5分钟刷新一次。
 
 在输入运行命令时可添加参数，如输入：
 <pre><code>sudo python3 mian.py 1</code></pre>
