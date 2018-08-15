@@ -36,9 +36,23 @@ import urllib.request
 import numpy as np
 import json
 import gzip
+import calendar
 
 EPD_WIDTH = 640
 EPD_HEIGHT = 384
+
+def strB2Q(ustring):#半角转全角函数  #后面文字显示需对齐时使用
+    rstring = ""
+    for uchar in ustring:
+        inside_code=ord(uchar)
+        if inside_code == 32:    
+            inside_code = 12288
+        elif inside_code >= 32 and inside_code <= 126:    
+            inside_code += 65248
+ 
+        rstring += chr(inside_code)
+    return rstring
+
 
 def weather():
     #获取天气情况
@@ -121,7 +135,7 @@ def refresh():
     draw_black = ImageDraw.Draw(image_black)
     draw_yellow.line((0,115,640,115),fill=0,width=4)#上横线
     draw_yellow.line((200,0,200,115),fill=0,width=3)#上左竖线
-    draw_yellow.line((440,0,440,115),fill=0,width=3)#上右竖线
+    draw_yellow.line((430,0,430,115),fill=0,width=3)#上右竖线
     draw_yellow.line((0,280,640,280),fill=0,width=5)#下横线
     #font = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 24)
     #draw_yellow.rectangle((0, 0, 640, 40), fill = 255)
@@ -193,6 +207,20 @@ def refresh():
     draw_black.text((50, 310), WF["twoday"], font = font, fill = 0)
     draw_black.text((50, 330), WF["threeday"], font = font, fill = 0)
     draw_black.text((50, 350), WF["fourday"], font = font, fill = 0)
+
+    #日历  #待完善，显示不清
+    yy = int(time.strftime('%Y', time.localtime(time.time())))
+    mm = int(time.strftime('%m', time.localtime(time.time())))
+    str_cal = calendar.month(yy,mm)
+    font = ImageFont.truetype('fonts/msyhbd.ttc', 15)
+    image_cal = Image.new('1', (300, 145), 255)
+    draw_cal = ImageDraw.Draw(image_cal)
+    draw_cal.text((0,0), strB2Q(str_cal), font = font, fill = 0)
+    image_cal= image_cal.resize((200,110))
+    image_black.paste(image_cal,(435,3))
+    #font = ImageFont.truetype('fonts/msyhbd.ttc', 10)
+    #draw_black.text((445,0), strB2Q(str_cal), font = font, fill = 0)
+
 
     #天气折线图 hightem.png lowtem.png ##失败！无法清晰显示
     #drawline(WF)
