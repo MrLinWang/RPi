@@ -38,7 +38,7 @@ SPI library of Python
 PIL (Python Imaging Library) library
 
 在树莓派上拉取代码：  
-<pre><code>git clone https://github.com/MrLinWang/RPi.git
+<pre><code>git clone https://github.com/MrLinWang/RPi-Epaper.git
 </code></pre>
 
 执行：
