@@ -334,6 +334,20 @@ def refresh(reverse = False):#刷新内容
     #draw_black.text((445,0), strB2Q(str_cal), font = font, fill = 0)
 
 
+    #日历  #待完善，显示不清
+    yy = int(time.strftime('%Y', time.localtime(time.time())))
+    mm = int(time.strftime('%m', time.localtime(time.time())))
+    str_cal = calendar.month(yy,mm)
+    font = ImageFont.truetype(Font_bd, 15)
+    image_cal = Image.new('1', (300, 145), 255)
+    draw_cal = ImageDraw.Draw(image_cal)
+    draw_cal.text((0,0), strB2Q(str_cal), font = font, fill = 0)
+    image_cal= image_cal.resize((200,110))
+    image_black.paste(image_cal,(435,3))
+    #font = ImageFont.truetype('fonts/msyhbd.ttc', 10)
+    #draw_black.text((445,0), strB2Q(str_cal), font = font, fill = 0)
+
+
     #天气折线图 hightem.png lowtem.png ##失败！无法清晰显示
     #drawline(WF)
     #png_size = (400,384)
