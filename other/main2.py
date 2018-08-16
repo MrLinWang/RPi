@@ -48,8 +48,6 @@ Font_bd = 'fonts/msyhbd.ttc'
 Font_l = 'fonts/msyhl.ttc'
 Font = 'fonts/msyh.ttc'
 
-Info = {"date":0}
-
 def strB2Q(ustring):#半角转全角函数  #后面文字显示需对齐时使用
     rstring = ""
     for uchar in ustring:
@@ -149,80 +147,9 @@ def rotateimage(image,angle,width,height):#图像无裁剪旋转函数#有bug
     image_tem = image_tem.crop(box)
     return image_tem
 
-def getinfo(Info):#获取/更新显示信息
-    datenow = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-    if datenow!=Info["date"]:
-        date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-        #日期
-        str_year = time.strftime('%Y年%m月%d日', time.localtime(time.time()))
-
-        #时间
-        str_time = time.strftime('%H:%M', time.localtime(time.time()))
-
-        #星期
-        week = time.strftime('%w', time.localtime(time.time()))
-        if week == '0':
-            str_week = '星期日'
-        elif week == '1':
-            str_week = '星期一'
-        elif week == '2':
-            str_week = '星期二'
-        elif week == '3':
-            str_week = '星期三'
-        elif week == '4':
-            str_week = '星期四'
-        elif week == '5':
-            str_week = '星期五'
-        elif week == '6':
-            str_week = '星期六'
-        else:
-            str_week = 'error!'
-
-        #天气
-        WF = weather()
-        #today
-        str_city = WF["city"] +" "+ "今日天气"
-        str_tdweather1 = WF["today1"]
-        str_tdweather2 = WF["today2"]
-        #1234_day
-        str_oneday = WF["oneday"]
-        str_twoday = WF["twoday"]
-        str_threeday = WF["threeday"]
-        str_fourday = WF["fourday"]
-
-        #日历
-        yy = int(time.strftime('%Y', time.localtime(time.time())))
-        mm = int(time.strftime('%m', time.localtime(time.time())))
-        str_cal = calendar.month(yy,mm)
-        str_B2Qcal = strB2Q(str_cal)
-
-        Info["date"] = date
-        Info["year"] = str_year
-        Info["time"] = str_time
-        Info["week"] = str_week
-        Info["city"] = str_city
-        Info["td1"] = str_tdweather1
-        Info["td2"] = str_tdweather2
-        Info["oneday"] = str_oneday
-        Info["twoday"] = str_twoday
-        Info["threeday"] = str_threeday
-        Info["fourday"] = str_fourday
-        Info["cal"] = str_B2Qcal
-        #Info{"date":date,"year":str_year,"time":str_time,"week":str_week,"city":str_city,"td1":str_tdweather1,\
-        #    "td2":str_tdweather2,"oneday":str_oneday,"twoday":str_twoday,"threeday":str_threeday,"fourday":str_fourday,\
-        #    "cal":str_B2Qcal}
-    else:
-        #时间
-        str_time = time.strftime('%H:%M', time.localtime(time.time()))
-        Info["time"] = str_time
-    return Info
-
-
 def refresh(reverse = False):#刷新内容
     epd = epd7in5b.EPD()
     epd.init()
-
-    info = getinfo(Info)
 
     # For simplicity, the arguments are explicit numerical coordinates
     image_yellow = Image.new('1', (EPD_WIDTH, EPD_HEIGHT), 255)    # 255: clear the frame
@@ -243,8 +170,7 @@ def refresh(reverse = False):#刷新内容
     #draw_red.chord((40, 80, 180, 220), 0, 360, fill = 0)
 
     #日期
-    #str_year = time.strftime('%Y年%m月%d日', time.localtime(time.time()))
-    str_year = info["year"]
+    str_year = time.strftime('%Y年%m月%d日', time.localtime(time.time()))
     font = ImageFont.truetype(Font, 23)
     draw_black.text((15, 15), str_year, font = font, fill = 0)
     #str_date = time.strftime('%m月%d日', time.localtime(time.time()))
@@ -252,8 +178,7 @@ def refresh(reverse = False):#刷新内容
     #draw_black.text((25, 55), str_date, font = font, fill = 0)
 
     #时间
-    #str_time = time.strftime('%H:%M', time.localtime(time.time()))
-    str_time = info["time"]
+    str_time = time.strftime('%H:%M', time.localtime(time.time()))
     font = ImageFont.truetype(Font_bd, 150)
     draw_black.text((110, 95), str_time, font = font, fill = 0)
     draw_yellow.text((108, 93), str_time, font = font, fill = 0)
@@ -268,66 +193,52 @@ def refresh(reverse = False):#刷新内容
     #draw_yellow.line((470,115,470,280),fill=0,width=4)#中右竖线
 
     #星期
-    #week = time.strftime('%w', time.localtime(time.time()))
-    #if week == '0':
-    #    str_week = '星期日'
-    #elif week == '1':
-    #    str_week = '星期一'
-    #elif week == '2':
-    #    str_week = '星期二'
-    #elif week == '3':
-    #    str_week = '星期三'
-    #elif week == '4':
-    #    str_week = '星期四'
-    #elif week == '5':
-    #    str_week = '星期五'
-    #elif week == '6':
-    #    str_week = '星期六'
-    #else:
-    #    str_week = 'error!'
-    str_week = info["week"]
+    week = time.strftime('%w', time.localtime(time.time()))
+    if week == '0':
+        str_week = '星期日'
+    elif week == '1':
+        str_week = '星期一'
+    elif week == '2':
+        str_week = '星期二'
+    elif week == '3':
+        str_week = '星期三'
+    elif week == '4':
+        str_week = '星期四'
+    elif week == '5':
+        str_week = '星期五'
+    elif week == '6':
+        str_week = '星期六'
+    else:
+        str_week = 'error!'
     font = ImageFont.truetype(Font_bd, 55)
     draw_black.text((17, 35), str_week, font = font, fill = 0)
 
     #天气
-    #WF = weather()
+    WF = weather()
     #today
-    #str_city = WF["city"] +" "+ "今日天气"
-    str_city = info["city"]
+    str_city = WF["city"] +" "+ "今日天气"
     font = ImageFont.truetype(Font_bd, 20)
     draw_black.text((230, 5), str_city, font = font, fill = 0)
-    #str_tdweather1 = WF["today1"]
-    str_tdweather1 = info["td1"]
+    str_tdweather1 = WF["today1"]
     font = ImageFont.truetype(Font, 20)
     draw_black.text((215, 33), str_tdweather1, font = font, fill = 0)
-    #str_tdweather2 = WF["today2"]
-    str_tdweather2 = info["td2"]
+    str_tdweather2 = WF["today2"]
     draw_black.text((315, 33), str_tdweather2, font = font, fill = 0)
     #1234_day
     font = ImageFont.truetype(Font_l, 15)
-    #str_oneday = WF["oneday"]
-    #str_twoday = WF["twoday"]
-    #str_threeday = WF["threeday"]
-    #str_fourday = WF["fourday"]
-    str_oneday = info["oneday"]
-    str_twoday = info["twoday"]
-    str_threeday = info["threeday"]
-    str_fourday = info["fourday"]
-    draw_black.text((50, 290), str_oneday, font = font, fill = 0)
-    draw_black.text((50, 310), str_twoday, font = font, fill = 0)
-    draw_black.text((50, 330), str_threeday, font = font, fill = 0)
-    draw_black.text((50, 350), str_fourday, font = font, fill = 0)
+    draw_black.text((50, 290), WF["oneday"], font = font, fill = 0)
+    draw_black.text((50, 310), WF["twoday"], font = font, fill = 0)
+    draw_black.text((50, 330), WF["threeday"], font = font, fill = 0)
+    draw_black.text((50, 350), WF["fourday"], font = font, fill = 0)
 
     #日历  #待完善，显示不清
-    #yy = int(time.strftime('%Y', time.localtime(time.time())))
-    #mm = int(time.strftime('%m', time.localtime(time.time())))
-    #str_cal = calendar.month(yy,mm)
-    #str_B2Qcal = strB2Q(str_cal)
-    str_B2Qcal = info["cal"]
+    yy = int(time.strftime('%Y', time.localtime(time.time())))
+    mm = int(time.strftime('%m', time.localtime(time.time())))
+    str_cal = calendar.month(yy,mm)
     font = ImageFont.truetype(Font_bd, 15)
     image_cal = Image.new('1', (300, 145), 255)
     draw_cal = ImageDraw.Draw(image_cal)
-    draw_cal.text((0,0),str_B2Qcal , font = font, fill = 0)
+    draw_cal.text((0,0), strB2Q(str_cal), font = font, fill = 0)
     image_cal= image_cal.resize((200,110))
     image_black.paste(image_cal,(435,3))
     #font = ImageFont.truetype('fonts/msyhbd.ttc', 10)
@@ -358,8 +269,6 @@ def refresh1(reverse = False):#刷新内容
     epd = epd7in5b.EPD()
     epd.init()
 
-    info = getinfo(Info)
-
     EPD_WIDTH = 384
     EPD_HEIGHT = 640
 
@@ -378,79 +287,63 @@ def refresh1(reverse = False):#刷新内容
     
 
     #日期
-    #str_year = time.strftime('%Y年%m月%d日', time.localtime(time.time()))
-    str_year = info["year"]
+    str_year = time.strftime('%Y年%m月%d日', time.localtime(time.time()))
     font = ImageFont.truetype(Font, 20)
     draw_black.text((17, 5), str_year, font = font, fill = 0)
 
 
     #时间
-    #str_time = time.strftime('%H:%M', time.localtime(time.time()))
-    str_time = info["time"]
+    str_time = time.strftime('%H:%M', time.localtime(time.time()))
     font = ImageFont.truetype(Font_bd, 130)
     draw_black.text((15, 65), str_time, font = font, fill = 0)
     draw_yellow.text((13, 63), str_time, font = font, fill = 0)
 
     #星期
-    #week = time.strftime('%w', time.localtime(time.time()))
-    #if week == '0':
-    #    str_week = '星期日'
-    #elif week == '1':
-    #    str_week = '星期一'
-    #elif week == '2':
-    #    str_week = '星期二'
-    #elif week == '3':
-    #    str_week = '星期三'
-    #elif week == '4':
-    #    str_week = '星期四'
-    #elif week == '5':
-    #    str_week = '星期五'
-    #elif week == '6':
-    #    str_week = '星期六'
-    #else:
-    #    str_week = 'error!'
-    str_week = info["week"]
+    week = time.strftime('%w', time.localtime(time.time()))
+    if week == '0':
+        str_week = '星期日'
+    elif week == '1':
+        str_week = '星期一'
+    elif week == '2':
+        str_week = '星期二'
+    elif week == '3':
+        str_week = '星期三'
+    elif week == '4':
+        str_week = '星期四'
+    elif week == '5':
+        str_week = '星期五'
+    elif week == '6':
+        str_week = '星期六'
+    else:
+        str_week = 'error!'
     font = ImageFont.truetype(Font_bd, 45)
     draw_black.text((25, 25), str_week, font = font, fill = 0)
 
     #天气
-    #WF = weather()
+    WF = weather()
     #today
-    #str_city = WF["city"] + ' ' + "今日天气"
-    str_city = info["city"]
+    str_city = WF["city"] + ' ' + "今日天气"
     font = ImageFont.truetype(Font_bd, 15)
     draw_black.text((220, 5), str_city, font = font, fill = 0)
-    #str_tdweather1 = WF["today1"]
-    str_tdweather1 = info["td1"]
+    str_tdweather1 = WF["today1"]
     font = ImageFont.truetype(Font, 15)
     draw_black.text((210, 25), str_tdweather1, font = font, fill = 0)
-    #str_tdweather2 = WF["today2"]
-    str_tdweather2 = info["td2"]
+    str_tdweather2 = WF["today2"]
     draw_black.text((290, 25), str_tdweather2, font = font, fill = 0)
     #1234——day
     font = ImageFont.truetype(Font, 11)
-    #str_oneday = WF["oneday"]
-    #str_twoday = WF["twoday"]
-    #str_threeday = WF["threeday"]
-    #str_fourday = WF["fourday"]
-    str_oneday = info["oneday"]
-    str_twoday = info["twoday"]
-    str_threeday = info["threeday"]
-    str_fourday = info["fourday"]
-    draw_black.text((5, 395), str_oneday, font = font, fill = 0)
-    draw_black.text((5, 410), str_twoday, font = font, fill = 0)
-    draw_black.text((5, 425), str_threeday, font = font, fill = 0)
-    draw_black.text((5, 440), str_fourday, font = font, fill = 0)
+    draw_black.text((5, 395), WF["oneday"], font = font, fill = 0)
+    draw_black.text((5, 410), WF["twoday"], font = font, fill = 0)
+    draw_black.text((5, 425), WF["threeday"], font = font, fill = 0)
+    draw_black.text((5, 440), WF["fourday"], font = font, fill = 0)
 
 
     #日历
-    #yy = int(time.strftime('%Y', time.localtime(time.time())))
-    #mm = int(time.strftime('%m', time.localtime(time.time())))
-    #str_cal = calendar.month(yy,mm)
-    #str_B2Qcal = strB2Q(str_cal)
-    str_B2Qcal = info["cal"]
+    yy = int(time.strftime('%Y', time.localtime(time.time())))
+    mm = int(time.strftime('%m', time.localtime(time.time())))
+    str_cal = calendar.month(yy,mm)
     font = ImageFont.truetype(Font_bd, 18)
-    draw_black.text((13,220),str_B2Qcal , font = font, fill = 0)
+    draw_black.text((13,220), strB2Q(str_cal), font = font, fill = 0)
 
 
     image_black = rotateimage(image_black,-90,EPD_WIDTH,EPD_HEIGHT)
