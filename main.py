@@ -66,6 +66,26 @@ def getcityname():#获取本地位置
     city_info=urllib.request.urlopen( urllib.request.Request('http://pv.sohu.com/cityjson')).read().decode('gb2312')
     city_name = city_info.split('=')[1].split(':')[3].split('"')[1]
     city_name = jieba.lcut(city_name)[-1]
+
+    #处理城市名不正确问题
+    #访问的url，其中urllib.parse.quote是将城市名转换为url的组件
+    url = 'http://wthrcdn.etouch.cn/weather_mini?city='+urllib.parse.quote(city_name)
+    #发出请求并读取到weather_data
+    weather_data = urllib.request.urlopen(url).read()
+    #以utf-8的编码方式解压数据
+    weather_data = gzip.decompress(weather_data).decode('utf-8')
+    #将json数据转化为dict数据
+    weather_dict = json.loads(weather_data)
+    #print(weather_dict)
+
+    #
+    if weather_dict.get('desc') == 'invilad-citykey':
+        with open('cityname.txt', 'r',encoding='utf-8') as f:
+            city_name = f.readline().rstrip('\n')
+    elif weather_dict.get('desc') =='OK' :
+        with open('cityname.txt', 'w',encoding='utf-8') as f:
+            f.write(city_name)
+
     return city_name
 
 def weather():#获取天气情况
@@ -84,6 +104,10 @@ def weather():#获取天气情况
     #print(weather_dict)
     if weather_dict.get('desc') == 'invilad-citykey':
         print("错误！输入的城市名有误！")
+        WF = {"city":cityname,"today1":"null","today2":"null","oneday":"null",\
+                "twoday":"null","threeday":"null","fourday":"null",\
+                "hightem":"null","lowtem":"null","date":"null","weather_dict":weather_dict}
+        return WF
     elif weather_dict.get('desc') =='OK' :
         forecast = weather_dict.get('data').get('forecast')
 
@@ -150,6 +174,7 @@ def rotateimage(image,angle,width,height):#图像无裁剪旋转函数#有bug
     return image_tem
 
 def getinfo(Info):#获取/更新显示信息
+
     datenow = time.strftime('%Y-%m-%d', time.localtime(time.time()))
     if datenow!=Info["date"]:
         date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
@@ -216,7 +241,6 @@ def getinfo(Info):#获取/更新显示信息
         str_time = time.strftime('%H:%M', time.localtime(time.time()))
         Info["time"] = str_time
     return Info
-
 
 def refresh(reverse = False):#刷新内容
     epd = epd7in5b.EPD()
