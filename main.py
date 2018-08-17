@@ -116,7 +116,7 @@ def weather():#获取天气情况
                 +'低温:'+forecast[0].get('low')[3:] + '\n'
 
         today2 = '风向:'+forecast[0].get('fengxiang') +'\n'\
-                +'风力:'+forecast[0].get('fengli')[9:12] + '\n'\
+                +'风力:'+forecast[0].get('fengli')[9:-3] + '\n'\
                 +'天气:'+forecast[0].get('type') + '\n'
 
         one_day = forecast[1].get('date')+'   '\
@@ -124,28 +124,28 @@ def weather():#获取天气情况
                 +'高温:'+forecast[1].get('high')[3:]+'   '\
                 +'低温:'+forecast[1].get('low')[3:]+'   '\
                 +'风向:'+forecast[1].get('fengxiang')+'   '\
-                +'风力:'+forecast[1].get('fengli')[9:12]+'   '
+                +'风力:'+forecast[1].get('fengli')[9:-3]+'   '
 
         two_day = forecast[2].get('date') + '   ' \
                 +'天气:' + forecast[2].get('type') + '   ' \
                 + '高温:' + forecast[2].get('high')[3:] + '   ' \
                 + '低温:' + forecast[2].get('low')[3:] + '   ' \
                 + '风向:' + forecast[2].get('fengxiang') + '   ' \
-                + '风力:' + forecast[2].get('fengli')[9:12] + '   '
+                + '风力:' + forecast[2].get('fengli')[9:-3] + '   '
     
         three_day = forecast[3].get('date') + '   ' \
                 + '天气:' + forecast[3].get('type') + '   ' \
                 + '高温:' + forecast[3].get('high')[3:] + '   ' \
                 + '低温:' + forecast[3].get('low')[3:] + '   ' \
                 + '风向:' + forecast[3].get('fengxiang') + '   ' \
-                + '风力:' + forecast[3].get('fengli')[9:12] + '   '
+                + '风力:' + forecast[3].get('fengli')[9:-3] + '   '
 
         four_day = forecast[4].get('date') + '   ' \
                 + '天气:' + forecast[4].get('type') + '   ' \
                 + '高温:' + forecast[4].get('high')[3:] + '   ' \
                 + '低温:' + forecast[4].get('low')[3:] + '   ' \
                 + '风向:' + forecast[4].get('fengxiang') + '   ' \
-                + '风力:' + forecast[4].get('fengli')[9:12] + '   '
+                + '风力:' + forecast[4].get('fengli')[9:-3] + '   '
 
 
         hightem = [1,2,3,4,5]
