@@ -39,6 +39,10 @@ import json
 import gzip
 import calendar
 import sys
+import socket
+import struct
+import fcntl
+
 
 EPD_WIDTH = 640
 EPD_HEIGHT = 384
@@ -148,17 +152,17 @@ def weather():#获取天气情况
                 + '风力:' + forecast[4].get('fengli')[9:-3] + '   '
 
 
-        hightem = [1,2,3,4,5]
-        lowtem = [1,2,3,4,5]
+        #hightem = [1,2,3,4,5]
+        #lowtem = [1,2,3,4,5]
         date = [1,2,3,4,5]
         for i in range(0,5):
-            hightem[i] = int(forecast[i].get('high')[3:5])
-            lowtem[i] = int(forecast[i].get('low')[3:5])
+        #   hightem[i] = int(forecast[i].get('high')[3:5])
+        #    lowtem[i] = int(forecast[i].get('low')[3:5])
             date[i] = int(forecast[i].get('date')[:-4])
 
         WF = {"city":cityname,"today1":today1,"today2":today2,"oneday":one_day,\
                 "twoday":two_day,"threeday":three_day,"fourday":four_day,\
-                "hightem":hightem,"lowtem":lowtem,"date":date,"weather_dict":weather_dict}
+                "hightem":0,"lowtem":0,"date":date,"weather_dict":weather_dict}
     return WF
 
 def rotateimage(image,angle,width,height):#图像无裁剪旋转函数#有bug
@@ -534,6 +538,10 @@ def welcome(reverse = False):#显示欢迎语
 
     print("进入界面。时间：{}".format(time.strftime('%H:%M:%S', time.localtime(time.time()))))
 
+def get_ip(ifname):#获得本机ip地址
+    s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(s.fileno(),0x8915,struct.pack('256s',bytes(ifname[:15],'utf-8')))[20:24])
+
 def welcome1(reverse = False):#显示欢迎语
     # display images
     #frame_black = epd.get_frame_buffer(Image.open('background.bmp'))
@@ -555,6 +563,14 @@ def welcome1(reverse = False):#显示欢迎语
     font = ImageFont.truetype(Font_bd, 30)
     draw_yellow.text((220,210),'LinWang 制作', font = font, fill = 0)
     draw_black.text((221,211),'LinWang 制作', font = font, fill = 0)
+    
+    
+    font = ImageFont.truetype(Font, 20)
+    wlan0ip = get_ip('wlan0')
+    #eth0ip = get_ip('eth0')
+    #strip = "wlanIP:" + wlan0ip + "\n" + "eth0IP:" + eth0ip
+    #draw_black.text((150,340), strip, font = font, fill = 0)
+    draw_black.text((150,340), "IP:" + wlan0ip, font = font, fill = 0)
 
     image_black = image_black.rotate(-90)
     image_yellow = image_yellow.rotate(-90)
