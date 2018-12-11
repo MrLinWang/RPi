@@ -413,8 +413,8 @@ def refresh1(reverse = False):#刷新内容
     draw_yellow.line((0,90,384,90),fill=0,width=4)#上横线
     draw_yellow.line((190,0,190,90),fill=0,width=3)#上竖线
     draw_yellow.line((0,215,384,215),fill=0,width=4)#上2横线
-    draw_yellow.line((0,390,384,390),fill=0,width=4)#下横线
-    draw_yellow.line((0,460,384,460),fill=0,width=4)#下横线
+    draw_yellow.line((0,405,384,405),fill=0,width=4)#下横线
+    draw_yellow.line((0,475,384,475),fill=0,width=4)#下横线
     #draw_yellow.line((440,0,440,115),fill=0,width=3)#上右竖线
     #draw_yellow.line((0,280,640,280),fill=0,width=5)#下横线
     
@@ -479,10 +479,10 @@ def refresh1(reverse = False):#刷新内容
     str_twoday = info["twoday"]
     str_threeday = info["threeday"]
     str_fourday = info["fourday"]
-    draw_black.text((5, 395), str_oneday, font = font, fill = 0)
-    draw_black.text((5, 410), str_twoday, font = font, fill = 0)
-    draw_black.text((5, 425), str_threeday, font = font, fill = 0)
-    draw_black.text((5, 440), str_fourday, font = font, fill = 0)
+    draw_black.text((5, 410), str_oneday, font = font, fill = 0)
+    draw_black.text((5, 425), str_twoday, font = font, fill = 0)
+    draw_black.text((5, 440), str_threeday, font = font, fill = 0)
+    draw_black.text((5, 455), str_fourday, font = font, fill = 0)
 
 
     #日历
